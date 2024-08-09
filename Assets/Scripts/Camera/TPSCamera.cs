@@ -20,7 +20,6 @@ public class TPSCamera : MonoBehaviour
 
     private const float TURN_SPEED = 1.5F;
     private const float TURN_SMOOTHING = 0.0F;
-
     private const bool VERTICAL_AUTO_RETURN = false;
 
     private ITPSCameraWallClip _tpsCameraWallClip;
@@ -38,6 +37,9 @@ public class TPSCamera : MonoBehaviour
 
     void Start()
     {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
         _tpsCameraWallClip = GetComponent<ITPSCameraWallClip>();
 
         _transformTargetRotation = transform.localRotation;
@@ -61,23 +63,23 @@ public class TPSCamera : MonoBehaviour
         if (Time.timeScale < float.Epsilon)
 			return;
 
-        float _fX = Input.GetAxis("Mouse X");
-        float _fY = Input.GetAxis("Mouse Y");
+        float mouseX = Input.GetAxis("Mouse X");
+        float mouseY = Input.GetAxis("Mouse Y");
 
         // Adjust the look angle by an amount proportional to the turn speed and horizontal input.
-        _lookAngle += _fX * TURN_SPEED;
+        _lookAngle += mouseX * TURN_SPEED;
 
         // Rotate the rig (the root object) around Y axis only:
         _transformTargetRotation = Quaternion.Euler(0f, _lookAngle, 0f);
 
         if (VERTICAL_AUTO_RETURN)
         {
-            // _tiltAngle = _fY > 0 ? Mathf.Lerp(0, -_tiltMin, _fY) : Mathf.Lerp(0, _tiltMax, -_fY);
+            // _tiltAngle = mouseY > 0 ? Mathf.Lerp(0, -_tiltMin, mouseY) : Mathf.Lerp(0, _tiltMax, -mouseY);
         }
         else
         {
             // on platforms with a mouse, we adjust the current angle based on Y mouse input and turn speed
-            _tiltAngle -= _fY * TURN_SPEED;
+            _tiltAngle -= mouseY * TURN_SPEED;
             // and make sure the new value is within the tilt range
             _tiltAngle = Mathf.Clamp(_tiltAngle, -_tiltMin, _tiltMax);
         }

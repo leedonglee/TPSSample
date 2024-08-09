@@ -40,14 +40,14 @@ public class Player : IPlayer
     private CapsuleCollider _capsuleCollider;
 
     // Anim
-    private const string ANIM_ON_GROUND = "onGround";
-    private const string ANIM_ON_PISTOL = "onPistol";
-    private const string ANIM_ON_AIMING = "onAiming";
-    private const string ANIM_NUM_ATTACK = "numAttack";
-    private const string ANIM_MOVE_RIGHT = "moveRight";
-    private const string ANIM_MOVE_FORWARD = "moveForward";
-    private const string ANIM_ON_JUMP = "onJump";
-    private const string ANIM_ON_ROLL = "onRoll";
+    private const string ON_GROUND = "onGround";
+    private const string ON_PISTOL = "onPistol";
+    private const string ON_AIMING = "onAiming";
+    private const string NUM_ATTACK = "numAttack";
+    private const string MOVE_RIGHT = "moveRight";
+    private const string MOVE_FORWARD = "moveForward";
+    private const string ON_JUMP = "onJump";
+    private const string ON_ROLL = "onRoll";
 
     private Transform _chest;
     private Vector3 _chestDir;
@@ -96,39 +96,40 @@ public class Player : IPlayer
 
         if (_isAttacking)
         {
-            if (!_animator.GetBool(ANIM_ON_GROUND) || _animator.GetBool(ANIM_ON_PISTOL))
+            if (!_animator.GetBool(ON_GROUND) || _animator.GetBool(ON_PISTOL))
             {
-                _animator.SetInteger(ANIM_NUM_ATTACK, 0);
+                _animator.SetInteger(NUM_ATTACK, 0);
                 _isAttacking = false;
             }
             else if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Jump") || _animator.GetCurrentAnimatorStateInfo(0).IsName("JumpForward") || _animator.GetCurrentAnimatorStateInfo(0).IsName("JumpBack") || _animator.GetCurrentAnimatorStateInfo(0).IsName("JumpOver"))
             {
-                _animator.SetInteger(ANIM_NUM_ATTACK, 0);
+                _animator.SetInteger(NUM_ATTACK, 0);
                 _isAttacking = false;
             }            
             else if (_animator.GetCurrentAnimatorStateInfo(0).IsName("SwordAttack1") && _animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.9f && _swordCount == 1)
             {
-                _animator.SetInteger(ANIM_NUM_ATTACK, 0);
+                _animator.SetInteger(NUM_ATTACK, 0);
                 _isAttacking = false;             
             }
             else if (_animator.GetCurrentAnimatorStateInfo(0).IsName("SwordAttack2") && _animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.9f && _swordCount == 2)
             {                
-                _animator.SetInteger(ANIM_NUM_ATTACK, 0);
+                _animator.SetInteger(NUM_ATTACK, 0);
                 _isAttacking = false;
             }
             else if (_animator.GetCurrentAnimatorStateInfo(0).IsName("SwordAttack3") && _animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.9f && _swordCount > 2)
             {
-                _animator.SetInteger(ANIM_NUM_ATTACK, 0);
+                _animator.SetInteger(NUM_ATTACK, 0);
                 _isAttacking = false;
             }
             else if (_animator.GetCurrentAnimatorStateInfo(0).IsName("SpeedAttack") && _animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.9f)
             {
+                _animator.SetInteger(NUM_ATTACK, 0);
+                _isAttacking = false;
+
                 _rigidbody.useGravity = true;
                 _capsuleCollider.isTrigger = false;
 
                 transform.position = Vector3.MoveTowards(transform.position, transform.position + transform.forward * -2f, 10f * Time.deltaTime);
-                _animator.SetInteger(ANIM_NUM_ATTACK, 0);
-                _isAttacking = false;
             }
             /*
             else if (_animator.GetCurrentAnimatorStateInfo(0).IsName("SwordAttack1") && _animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 0.7f && _animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.4f)
@@ -157,7 +158,7 @@ public class Player : IPlayer
     void LateUpdate()
     {
         // Bone
-        if (_animator.GetBool(ANIM_ON_PISTOL))
+        if (_animator.GetBool(ON_PISTOL))
         {
             // 카메라 Update -> 플레이어 LateUpdate, 이 코드는 Update에서는 동작하지 않음
             _chestDir = _camera.transform.position + _camera.transform.forward * 50f;
@@ -187,9 +188,9 @@ public class Player : IPlayer
         }
 
         // PistolAiming
-        if (_animator.GetBool(ANIM_ON_PISTOL))
+        if (_animator.GetBool(ON_PISTOL))
         {
-            _animator.SetBool(ANIM_ON_AIMING, Input.GetMouseButton(1) && _animator.GetBool(ANIM_ON_GROUND));
+            _animator.SetBool(ON_AIMING, Input.GetMouseButton(1) && _animator.GetBool(ON_GROUND));
         }
 
         if (!_isJump)
@@ -210,14 +211,14 @@ public class Player : IPlayer
 
             if (_isRolling)
             {
-                _animator.SetBool(ANIM_ON_ROLL, true);
+                _animator.SetBool(ON_ROLL, true);
                 _isRolling = false;
             }
             else
             {
-                _animator.SetBool(ANIM_ON_JUMP, false);
-                _animator.SetBool(ANIM_ON_ROLL, false);
-                _animator.SetBool(ANIM_ON_GROUND, true);
+                _animator.SetBool(ON_JUMP, false);
+                _animator.SetBool(ON_ROLL, false);
+                _animator.SetBool(ON_GROUND, true);
 
                 _moveRight = _playerHorizontal;
                 _moveForward = _playerVertical;
@@ -248,13 +249,13 @@ public class Player : IPlayer
                     }
                 }
 
-                _animator.SetFloat(ANIM_MOVE_RIGHT, _moveRight, 0.1f, Time.deltaTime);
-                _animator.SetFloat(ANIM_MOVE_FORWARD, _moveForward, 0.1f, Time.deltaTime);
+                _animator.SetFloat(MOVE_RIGHT, _moveRight, 0.1f, Time.deltaTime);
+                _animator.SetFloat(MOVE_FORWARD, _moveForward, 0.1f, Time.deltaTime);
 
                 // Jump 관련
                 if (_isJump)
                 {
-                    _animator.SetBool(ANIM_ON_JUMP, true);
+                    _animator.SetBool(ON_JUMP, true);
 
                     _speedyCount = 0;
                     _isSpeedy = false;
@@ -264,7 +265,7 @@ public class Player : IPlayer
                 {
                     _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, 2, _rigidbody.velocity.z);
                 }
-                
+
                 if (_animator.GetCurrentAnimatorStateInfo(0).IsName("JumpForward") && _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 0.5f && _animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.01f)
                 {
                     _capsuleCollider.center = new Vector3(0, 1.8f, 0);
@@ -278,12 +279,15 @@ public class Player : IPlayer
         // Falling (지면과 1.0f 차이)
         else
         {
-            _animator.SetBool(ANIM_ON_GROUND, false);
-            _animator.SetBool(ANIM_ON_AIMING, false);
+            _animator.SetBool(ON_GROUND, false);
+            _animator.SetBool(ON_AIMING, false);
             _animator.applyRootMotion = false;
 
-            if (_rigidbody.velocity.y < -10f) // Airborne
+            // Airborne
+            if (_rigidbody.velocity.y < -10f)
+            {
                 _isRolling = true;
+            }
 
             _speedyCount = 0;
             _isSpeedy = false;
@@ -294,9 +298,9 @@ public class Player : IPlayer
 
     private void ChangeWeapon()
     {
-        if (!_animator.GetBool(ANIM_ON_PISTOL))
+        if (!_animator.GetBool(ON_PISTOL))
         {
-            _animator.SetBool(ANIM_ON_PISTOL, true);
+            _animator.SetBool(ON_PISTOL, true);
             _animator.SetLayerWeight(1, 1f); // Pistol Mask Weight 1
 
             _swords[0].SetActive(false);
@@ -307,8 +311,8 @@ public class Player : IPlayer
         }
         else
         {
-            _animator.SetBool(ANIM_ON_PISTOL, false);
-            _animator.SetBool(ANIM_ON_AIMING, false);
+            _animator.SetBool(ON_PISTOL, false);
+            _animator.SetBool(ON_AIMING, false);
             _animator.SetLayerWeight(1, 0f); // Pistol Mask Weight 0
 
             _swords[0].SetActive(true);
@@ -321,13 +325,13 @@ public class Player : IPlayer
 
     private void Attack()
     {
-        if (_animator.GetBool(ANIM_ON_PISTOL))
+        if (_animator.GetBool(ON_PISTOL))
         {
             float right = Random.Range(-0.2f, 0.2f);
             float up = Random.Range(-0.2f, 0.2f);
             float forward = 10f;
 
-            if (_animator.GetBool(ANIM_ON_AIMING))
+            if (_animator.GetBool(ON_AIMING))
             {
                 right = 0.4f;
                 up = Random.Range(-0.3f, 0.3f);
@@ -344,13 +348,13 @@ public class Player : IPlayer
             if (!_isAttacking && _animator.GetCurrentAnimatorStateInfo(0).IsName("Sword"))
             {
                 _isAttacking = true;
-                _swordCount = _isSpeedy ? -1 : 0;
-                _animator.SetInteger(ANIM_NUM_ATTACK, _swordCount);
+                _swordCount = _isSpeedy ? -1 : 1;
+                _animator.SetInteger(NUM_ATTACK, _swordCount);
             }
             else if (_isAttacking && _swordCount > 0 && _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 0.6f)
             {
                 _swordCount++;
-                _animator.SetInteger(ANIM_NUM_ATTACK, _swordCount);
+                _animator.SetInteger(NUM_ATTACK, _swordCount);
             }
         }
     }
