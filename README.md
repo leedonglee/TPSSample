@@ -11,9 +11,13 @@ Avatar Rig 분리 및 메카님 애니메이션, Blend Trees를 사용했습니�
 ## How to play
 
 이동: W, A, S, D
+<br>
 공격: 마우스 좌클릭
+<br>
 연속 공격(검): 마우스 연속 좌클릭
+<br>
 조준(권총): 마우스 우클릭
+<br>
 무기 전환: Tab
 
 ## Screenshot
